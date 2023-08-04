@@ -6,9 +6,9 @@ const CONFIRM_DATE_BTN = document.querySelector('.confirm-btn') as HTMLButtonEle
 const TABLE_CONTAINER = document.getElementById('table-container') as HTMLDivElement;
 const TABLE_PERIOD = document.querySelectorAll('td.period') as NodeListOf<Element>;
 const PERIOD_MODAL = document.getElementById('period-modal') as HTMLDivElement;
-const CALCULATE_PERIODS_BTN = document.getElementById('periods-btn') as HTMLButtonElement;
 const OPTIONS_CONTAINER = document.getElementById('options-container') as HTMLDivElement;
-
+const CALCULATE_PERIODS_BTN = document.getElementById('periods-btn') as HTMLButtonElement;
+const RESET_DATE_BTN = document.getElementById('reset-date-btn') as HTMLButtonElement;
 // Month strings array
 
 const months = [
@@ -204,3 +204,6 @@ const renderPeriodsModal = (periodsArr: number[], periodsTotal: number) => {
 
 CONFIRM_DATE_BTN.addEventListener('click', calendarHandler);
 CALCULATE_PERIODS_BTN.addEventListener('click', calculatePeriodsHandler);
+RESET_DATE_BTN.addEventListener('click', () =>{
+    location.reload()
+})

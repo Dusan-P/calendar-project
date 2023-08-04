@@ -1,17 +1,6 @@
 body {
   font-family: 'Monserrat', sans-serif;
 }
-.input-modal {
-  background-color: white;
-  position: fixed;
-  left: 35%;
-  top: 25%;
-  z-index: 1;
-  width: 30%;
-  opacity: 0;
-  animation: appear 0.2s ease-in forwards;
-}
-
 .visible {
   display: none; 
 }
@@ -50,9 +39,4 @@ td.period:hover {
 #calendar-content {
   flex-wrap: wrap;
   justify-content: space-evenly;
-}
-@keyframes appear {
-  to {
-    opacity: 1;
-  }
 }

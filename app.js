@@ -5,8 +5,9 @@ var CONFIRM_DATE_BTN = document.querySelector('.confirm-btn');
 var TABLE_CONTAINER = document.getElementById('table-container');
 var TABLE_PERIOD = document.querySelectorAll('td.period');
 var PERIOD_MODAL = document.getElementById('period-modal');
-var CALCULATE_PERIODS_BTN = document.getElementById('periods-btn');
 var OPTIONS_CONTAINER = document.getElementById('options-container');
+var CALCULATE_PERIODS_BTN = document.getElementById('periods-btn');
+var RESET_DATE_BTN = document.getElementById('reset-date-btn');
 // Month strings array
 var months = [
     "Јануар",
@@ -153,3 +154,6 @@ var renderPeriodsModal = function (periodsArr, periodsTotal) {
 // Event Listeners
 CONFIRM_DATE_BTN.addEventListener('click', calendarHandler);
 CALCULATE_PERIODS_BTN.addEventListener('click', calculatePeriodsHandler);
+RESET_DATE_BTN.addEventListener('click', function () {
+    location.reload();
+});
