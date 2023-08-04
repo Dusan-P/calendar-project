@@ -102,7 +102,9 @@ const toggleVisible = (...elements: Element[]): void => {
         element.classList.toggle('visible');
     });
 };
-var $: any // for handling bootstrap modal
+
+    // for handling bootstrap modal
+
 const toggleModal = () => {
     $('#inputModal').modal('hide');
 }

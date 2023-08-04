@@ -77,7 +77,7 @@ var toggleVisible = function () {
         element.classList.toggle('visible');
     });
 };
-var $; // for handling bootstrap modal
+// for handling bootstrap modal
 var toggleModal = function () {
     $('#inputModal').modal('hide');
 };
