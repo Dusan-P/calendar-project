@@ -1,0 +1,58 @@
+body {
+  font-family: 'Monserrat', sans-serif;
+}
+.input-modal {
+  background-color: white;
+  position: fixed;
+  left: 35%;
+  top: 25%;
+  z-index: 1;
+  width: 30%;
+  opacity: 0;
+  animation: appear 0.2s ease-in forwards;
+}
+
+.visible {
+  display: none; 
+}
+.month-heading, .year-heading {
+  cursor: default;
+}
+.week-day {
+  text-align: center;
+  background-color: white;
+  width: calc(100% / 7);
+  cursor: default;
+  text-align: center;
+  font-size: smaller;
+  user-select: none;
+}
+.month-day {
+  width: calc(100% / 7);
+  user-select: none;
+}
+.inactive {
+  background-color: white;
+  cursor: default;
+}
+.offday {
+  background-color: rgba(215,211,226, 0.5);
+  user-select: none;
+}
+.month-day:not(.inactive):hover {
+  background-color: cornflowerblue;
+  cursor: pointer;
+}
+td.period:hover {
+  background-color: cornflowerblue;
+  cursor: pointer;
+}
+#calendar-content {
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+@keyframes appear {
+  to {
+    opacity: 1;
+  }
+}
