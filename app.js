@@ -1,13 +1,15 @@
 // HTML
-var CALENDAR_CONTAINER = document.querySelector('#calendar-content');
 var USER_INPUT = document.getElementById('user-date');
 var CONFIRM_DATE_BTN = document.querySelector('.confirm-btn');
+var CALENDAR_CONTAINER = document.querySelector('#calendar-content');
+var CALENDAR_OPTIONS_CONTAINER = document.getElementById('year-options-container');
+var RESET_DATE_BTN = document.getElementById('reset-date-btn');
+var YEAR_BTNS = document.querySelectorAll('.year-btn');
 var TABLE_CONTAINER = document.getElementById('table-container');
 var TABLE_PERIOD = document.querySelectorAll('td.period');
 var PERIOD_MODAL = document.getElementById('period-modal');
-var OPTIONS_CONTAINER = document.getElementById('options-container');
+var TABLE_BTN_CONTAINER = document.getElementById('table-btn-container');
 var CALCULATE_PERIODS_BTN = document.getElementById('periods-btn');
-var RESET_DATE_BTN = document.getElementById('reset-date-btn');
 // Month strings array
 var months = [
     "Јануар",
@@ -24,7 +26,7 @@ var months = [
     "Децембар"
 ];
 // Calendar functions
-var calendarHandler = function () {
+var renderCalendar = function () {
     var userInput = USER_INPUT.value;
     if (userInput === null ||
         userInput === undefined ||
@@ -34,13 +36,15 @@ var calendarHandler = function () {
     else {
         var parsedDate = new Date(userInput);
         toggleModal();
-        toggleVisible(TABLE_CONTAINER, OPTIONS_CONTAINER);
+        toggleVisible(TABLE_CONTAINER, TABLE_BTN_CONTAINER, CALENDAR_OPTIONS_CONTAINER);
         generateCalendar(parsedDate);
+        yearBtnHandler(YEAR_BTNS, parsedDate);
+        toggleActivePeriod(TABLE_PERIOD);
     }
 };
 var generateCalendar = function (start) {
     var loopDate = start;
-    var endDate = new Date(start.getFullYear(), start.getMonth() + 12, start.getDate());
+    var endDate = new Date(start.getFullYear() + 1, start.getMonth(), start.getDate());
     var calendarHTML = '';
     var weekdaysHTML = "<p class=\"week-day px-1\">\u041D\u0435\u0434</p>\n    <p class=\"week-day px-1\">\u041F\u043E\u043D</p>\n    <p class=\"week-day px-1\">\u0423\u0442\u043E</p>\n    <p class=\"week-day px-1\">\u0421\u0440\u0438</p>\n    <p class=\"week-day px-1\">\u0427\u0435\u0442</p>\n    <p class=\"week-day px-1\">\u041F\u0435\u0442</p>\n    <p class=\"week-day px-1\">\u0421\u0443\u0431</p>\n    ";
     while (loopDate <= endDate) {
@@ -65,8 +69,7 @@ var generateCalendar = function (start) {
     }
     CALENDAR_CONTAINER.innerHTML += calendarHTML;
     var ALL_CALENDAR_DATES = document.querySelectorAll('p.month-day:not(.inactive)');
-    addOffDays(ALL_CALENDAR_DATES);
-    addPeriod(TABLE_PERIOD);
+    toggleOffDay(ALL_CALENDAR_DATES);
 };
 // Visibility
 var toggleVisible = function () {
@@ -83,38 +86,53 @@ var toggleModal = function () {
     $('#inputModal').modal('hide');
 };
 // Loops for event listeners
-var addOffDays = function (daysArr) {
+var toggleOffDay = function (daysArr) {
+    var mouseDown = false;
     daysArr.forEach(function (date) {
-        date.addEventListener('click', function () {
+        date.addEventListener('pointerdown', function () {
             date.classList.toggle('offday');
         });
     });
-    var mouseDown = false;
-    document.addEventListener('mousedown', function () {
+    document.addEventListener('pointerdown', function () {
         mouseDown = true;
     });
-    document.addEventListener('mouseup', function () {
+    document.addEventListener('pointerup', function () {
         mouseDown = false;
     });
     daysArr.forEach(function (date) {
-        date.addEventListener('mouseenter', function () {
+        date.addEventListener('pointerenter', function () {
             if (mouseDown) {
                 date.classList.add('offday');
             }
         });
     });
 };
-var addPeriod = function (periodArr) {
-    var _loop_1 = function (period) {
+var toggleActivePeriod = function (periodArr) {
+    periodArr.forEach(function (period) {
         period.addEventListener('click', function () {
             period.classList.toggle('table-warning');
             period.classList.toggle('active-period');
         });
-    };
-    for (var _i = 0, _a = periodArr; _i < _a.length; _i++) {
-        var period = _a[_i];
-        _loop_1(period);
-    }
+    });
+};
+var yearBtnHandler = function (btnsArr, start) {
+    var startDate = new Date(start.getFullYear(), start.getMonth() - 12, start.getDate());
+    btnsArr.forEach(function (btn) {
+        if (btn.id === 'previous-year') {
+            btn.addEventListener('click', function () {
+                CALENDAR_CONTAINER.innerHTML = '';
+                generateCalendar(new Date(startDate.getFullYear() - 1, startDate.getMonth(), startDate.getDate()));
+                startDate = new Date(startDate.getFullYear() - 1, startDate.getMonth(), startDate.getDate());
+            });
+        }
+        else if (btn.id === 'next-year') {
+            btn.addEventListener('click', function () {
+                CALENDAR_CONTAINER.innerHTML = '';
+                generateCalendar(new Date(startDate.getFullYear() + 1, startDate.getMonth(), startDate.getDate()));
+                startDate = new Date(startDate.getFullYear() + 1, startDate.getMonth(), startDate.getDate());
+            });
+        }
+    });
 };
 // Functions for calculating periods
 var calculatePeriodsHandler = function () {
@@ -152,7 +170,7 @@ var renderPeriodsModal = function (periodsArr, periodsTotal) {
     PERIOD_MODAL.innerHTML = modalHTML;
 };
 // Event Listeners
-CONFIRM_DATE_BTN.addEventListener('click', calendarHandler);
+CONFIRM_DATE_BTN.addEventListener('click', renderCalendar);
 CALCULATE_PERIODS_BTN.addEventListener('click', calculatePeriodsHandler);
 RESET_DATE_BTN.addEventListener('click', function () {
     location.reload();

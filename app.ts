@@ -1,14 +1,17 @@
 // HTML
 
-const CALENDAR_CONTAINER = document.querySelector('#calendar-content') as HTMLDivElement;
 const USER_INPUT = document.getElementById('user-date') as HTMLInputElement;
 const CONFIRM_DATE_BTN = document.querySelector('.confirm-btn') as HTMLButtonElement;
+const CALENDAR_CONTAINER = document.querySelector('#calendar-content') as HTMLDivElement;
+const CALENDAR_OPTIONS_CONTAINER = document.getElementById('year-options-container') as HTMLDivElement;
+const RESET_DATE_BTN = document.getElementById('reset-date-btn') as HTMLButtonElement;
+const YEAR_BTNS = document.querySelectorAll('.year-btn') as NodeListOf<Element>;
 const TABLE_CONTAINER = document.getElementById('table-container') as HTMLDivElement;
 const TABLE_PERIOD = document.querySelectorAll('td.period') as NodeListOf<Element>;
 const PERIOD_MODAL = document.getElementById('period-modal') as HTMLDivElement;
-const OPTIONS_CONTAINER = document.getElementById('options-container') as HTMLDivElement;
+const TABLE_BTN_CONTAINER = document.getElementById('table-btn-container') as HTMLDivElement;
 const CALCULATE_PERIODS_BTN = document.getElementById('periods-btn') as HTMLButtonElement;
-const RESET_DATE_BTN = document.getElementById('reset-date-btn') as HTMLButtonElement;
+
 // Month strings array
 
 const months = [
@@ -28,7 +31,7 @@ const months = [
 
 // Calendar functions
 
-const calendarHandler = () => {
+const renderCalendar = () => {
     const userInput = USER_INPUT.value;
     if (userInput === null ||
         userInput === undefined ||
@@ -36,15 +39,17 @@ const calendarHandler = () => {
         alert('Морате изабрати датум');
     } else {
         const parsedDate = new Date(userInput);
-        toggleModal()
-        toggleVisible(TABLE_CONTAINER, OPTIONS_CONTAINER)
-        generateCalendar(parsedDate)
+        toggleModal();
+        toggleVisible(TABLE_CONTAINER, TABLE_BTN_CONTAINER, CALENDAR_OPTIONS_CONTAINER);
+        generateCalendar(parsedDate);
+        yearBtnHandler(YEAR_BTNS, parsedDate);
+        toggleActivePeriod(TABLE_PERIOD);
     }
 };
 
 const generateCalendar = (start: Date): void => {
     let loopDate = start;
-    let endDate = new Date(start.getFullYear(), start.getMonth() + 12, start.getDate());
+    let endDate = new Date(start.getFullYear() + 1, start.getMonth(), start.getDate());
     let calendarHTML = '';
     const weekdaysHTML = `<p class="week-day px-1">Нед</p>
     <p class="week-day px-1">Пон</p>
@@ -91,8 +96,7 @@ const generateCalendar = (start: Date): void => {
 
     CALENDAR_CONTAINER.innerHTML += calendarHTML;
     const ALL_CALENDAR_DATES = document.querySelectorAll('p.month-day:not(.inactive)') as NodeListOf<HTMLElement>;
-    addOffDays(ALL_CALENDAR_DATES);
-    addPeriod(TABLE_PERIOD);
+    toggleOffDay(ALL_CALENDAR_DATES);
 };
 
 // Visibility
@@ -111,23 +115,23 @@ const toggleModal = () => {
 
 // Loops for event listeners
 
-const addOffDays = (daysArr: NodeListOf<HTMLElement>) => {
-    daysArr.forEach(date => {  // ne dozvoljava for-of loop na NodeListOf<Element> ???
-        date.addEventListener('click', () => {
+const toggleOffDay = (daysArr: NodeListOf<HTMLElement>) => {
+    let mouseDown = false;
+    daysArr.forEach(date => {
+        date.addEventListener('pointerdown', () => {
             date.classList.toggle('offday')
         })
     })
-    let mouseDown = false;
 
-    document.addEventListener('mousedown', () => {
+    document.addEventListener('pointerdown', () => {
         mouseDown = true;
     });
-    document.addEventListener('mouseup', () => {
+    document.addEventListener('pointerup', () => {
         mouseDown = false;
     });
 
     daysArr.forEach((date) => {
-        date.addEventListener('mouseenter', () => {
+        date.addEventListener('pointerenter', () => {
             if (mouseDown) {
                 date.classList.add('offday');
             }
@@ -136,14 +140,33 @@ const addOffDays = (daysArr: NodeListOf<HTMLElement>) => {
 
 };
 
-const addPeriod = (periodArr: NodeListOf<Element>) => {
-    for (let period of periodArr as any) {
+const toggleActivePeriod = (periodArr: NodeListOf<Element>) => {
+    periodArr.forEach(period => {
         period.addEventListener('click', () => {
             period.classList.toggle('table-warning')
             period.classList.toggle('active-period')
         })
-    }
+    })
 };
+
+const yearBtnHandler = (btnsArr: NodeListOf<Element>, start: Date) => {
+    let startDate = new Date(start.getFullYear(), start.getMonth() - 12, start.getDate());
+    btnsArr.forEach(btn => {
+        if (btn.id === 'previous-year') {
+        btn.addEventListener('click', () => {
+        CALENDAR_CONTAINER.innerHTML = '';
+        generateCalendar(new Date(startDate.getFullYear() - 1, startDate.getMonth(), startDate.getDate()));
+        startDate = new Date(startDate.getFullYear() - 1, startDate.getMonth(), startDate.getDate());
+    });
+}   else if(btn.id === 'next-year'){
+        btn.addEventListener('click', () => {
+        CALENDAR_CONTAINER.innerHTML = '';
+        generateCalendar(new Date(startDate.getFullYear() + 1, startDate.getMonth(), startDate.getDate()));
+        startDate = new Date(startDate.getFullYear() + 1, startDate.getMonth(), startDate.getDate());
+    })
+    }
+})
+}
 
 // Functions for calculating periods
 
@@ -202,7 +225,7 @@ const renderPeriodsModal = (periodsArr: number[], periodsTotal: number) => {
 
 // Event Listeners
 
-CONFIRM_DATE_BTN.addEventListener('click', calendarHandler);
+CONFIRM_DATE_BTN.addEventListener('click', renderCalendar);
 CALCULATE_PERIODS_BTN.addEventListener('click', calculatePeriodsHandler);
 RESET_DATE_BTN.addEventListener('click', () =>{
     location.reload()
